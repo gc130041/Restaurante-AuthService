@@ -13,6 +13,7 @@ import tablesRoutes from '../src/tables/table.routes.js';
 import menusRoutes from '../src/menus/menu.routes.js';
 import reservationsRoutes from '../src/reservations/reservation.routes.js';
 import authRoutes from '../src/users/user.routes.js'
+import orderRoutes from '../src/orders/order.routes.js';
 
 const BASE_URL = '/restaurant/v1';
 
@@ -33,6 +34,7 @@ const routes = (app) => {
     app.use(`${BASE_URL}/tables`, tablesRoutes);
     app.use(`${BASE_URL}/menus`, menusRoutes);
     app.use(`${BASE_URL}/reservations`, reservationsRoutes);
+    app.use(`${BASE_URL}/orders`, orderRoutes);
     app.use(`${BASE_URL}/auth`, authRoutes);
 }
 
