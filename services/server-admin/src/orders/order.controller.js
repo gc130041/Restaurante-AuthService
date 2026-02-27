@@ -1,83 +1,64 @@
 import Order from "./order.model.js";
 import Table from "../tables/table.model.js";
 
+const VALID_TRANSITIONS = {
+    "EN_ESPERA": ["EN_COCINA"],
+    "EN_COCINA": ["LISTO"],
+    "LISTO": ["SERVIDO"],
+    "SERVIDO": []
+};
+
 export const createOrder = async (req, res) => {
     try {
         const { table, restaurant, items } = req.body;
         const waiter = req.usuario._id; 
 
-        const existingOrder = await Order.findOne({ table, status: "ABIERTA" });
-        if (existingOrder) {
+        const tableUpdate = await Table.findOneAndUpdate(
+            { _id: table, status: "Disponible" }, 
+            { $set: { status: "Ocupada" } },
+            { new: true }
+        );
+
+        if (!tableUpdate) {
             return res.status(400).json({
                 success: false,
-                message: "Operación denegada: La mesa ya tiene una comanda abierta actualmente."
+                message: "Mesa no disponible o ya ocupada."
             });
         }
 
-        const tableExists = await Table.findById(table);
-        if (!tableExists) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "La mesa especificada no existe." 
-            });
-        }
-
-        const newOrder = new Order({
-            table,
-            waiter,
-            restaurant,
-            items
-        });
-
+        const newOrder = new Order({ table, waiter, restaurant, items });
         await newOrder.save();
 
-        res.status(201).json({
-            success: true,
-            message: "Comanda creada y vinculada exitosamente",
-            order: newOrder
-        });
-
+        res.status(201).json({ success: true, order: newOrder });
     } catch (error) {
-        console.error("Error al crear la orden:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error interno del servidor al crear la comanda",
-            error: error.message
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
 export const updateItemStatus = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
-        const { status } = req.body;
+        const { status: nextStatus } = req.body;
 
-        const order = await Order.findOneAndUpdate(
-            { _id: orderId, "items._id": itemId },
-            { $set: { "items.$.status": status } },
-            { new: true }
-        );
+        const order = await Order.findById(orderId);
+        if (!order) return res.status(404).json({ success: false, message: "Orden no encontrada" });
 
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: "No se encontró la orden o el platillo especificado."
+        const item = order.items.id(itemId);
+        if (!item) return res.status(404).json({ success: false, message: "Ítem no encontrado" });
+
+        if (!VALID_TRANSITIONS[item.status]?.includes(nextStatus)) {
+            return res.status(400).json({
+                success: false, 
+                message: `No se puede pasar de ${item.status} a ${nextStatus}`
             });
         }
 
-        res.status(200).json({
-            success: true,
-            message: `Estado del platillo actualizado a ${status}`,
-            order
-        });
+        item.status = nextStatus;
+        await order.save();
 
+        res.status(200).json({ success: true, order });
     } catch (error) {
-        console.error("Error al actualizar estado del platillo:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error interno del servidor al actualizar el platillo",
-            error: error.message
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
@@ -86,31 +67,15 @@ export const updateOrderStatus = async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
 
-        const order = await Order.findByIdAndUpdate(
-            id,
-            { status },
-            { new: true }
-        );
+        const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
+        if (!order) return res.status(404).json({ success: false, message: "Orden no encontrada" });
 
-        if (!order) {
-            return res.status(404).json({
-                success: false,
-                message: "Comanda no encontrada."
-            });
+        if (status === "CERRADA" || status === "CANCELADA") {
+            await Table.findByIdAndUpdate(order.table, { $set: { status: "Disponible" } });
         }
 
-        res.status(200).json({
-            success: true,
-            message: `Estado de la comanda actualizado a ${status}`,
-            order
-        });
-
+        res.status(200).json({ success: true, message: "Estado actualizado y mesa sincronizada" });
     } catch (error) {
-        console.error("Error al actualizar estado de la orden:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error interno del servidor",
-            error: error.message
-        });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
