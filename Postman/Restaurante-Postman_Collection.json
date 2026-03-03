@@ -1,11 +1,9 @@
 {
   "info": {
-    "_postman_id": "9ac765b6-8f83-4b06-903a-3fca5dc4ab8b",
+    "_postman_id": "be27d5f9-2834-4168-90e1-f23c3e0474f0",
     "name": "Proyecto Restaurante",
     "description": "Colección para proyecto-restaurante (referencia: rama dev).\n\nServicios:\n- server-admin (Express + Mongo): {{server_admin_base_url}}\n- auth-service (ASP.NET + Postgres + JWT): {{auth_service_base_url}}\n\nFlujo recomendado:\n1) Registrar (Auth)\n2) Login (Auth) -> guarda token en {{token}}\n3) Consumir endpoints protegidos en server-admin (users, orders)\n",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "48421810",
-    "_collection_link": "https://go.postman.co/collection/48421810-9ac765b6-8f83-4b06-903a-3fca5dc4ab8b?source=collection_link"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -13,6 +11,7 @@
       "item": [
         {
           "name": "Registrar usuario",
+          "id": "3bd3a80e-9fb3-4419-ac87-fcd50bace3a9",
           "request": {
             "method": "POST",
             "header": [
@@ -23,7 +22,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"correoejemplo@mail.com\",\n  \"password\": \"test123!\",\n  \"role\": \"{{role}}\"\n}"
+              "raw": "{\n  \"email\": \"correoejemplo2@mail.com\",\n  \"password\": \"test123!\",\n  \"role\": \"{{role}}\"\n}"
             },
             "url": {
               "raw": "{{auth_service_base_url}}/api/Auth/register",
@@ -45,6 +44,7 @@
             {
               "listen": "test",
               "script": {
+                "id": "41b7e2b1-ad48-4b01-811c-69e7c9c8c335",
                 "exec": [
                   "pm.test('Status 200', function () {",
                   "  pm.response.to.have.status(200);",
@@ -61,8 +61,21 @@
                 "packages": {},
                 "requests": {}
               }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "cde22a91-b773-4ea2-90bc-95342c57b83b",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
             }
           ],
+          "id": "b89040de-35c0-4d67-8101-f0489bb9fdca",
           "request": {
             "method": "POST",
             "header": [
@@ -73,7 +86,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"correoejemplo@mail.com\",\n  \"password\": \"test123!\"\n}"
+              "raw": "{\n  \"email\": \"correoejemplo2@mail.com\",\n  \"password\": \"test123!\"\n}"
             },
             "url": {
               "raw": "{{auth_service_base_url}}/api/Auth/login",
@@ -91,6 +104,7 @@
         },
         {
           "name": "Abrir Swagger",
+          "id": "d88befbd-f56e-46a9-bfbf-c61616121462",
           "request": {
             "method": "GET",
             "header": [],
@@ -106,7 +120,8 @@
           },
           "response": []
         }
-      ]
+      ],
+      "id": "46eb7595-8224-46fa-8c1b-d5c90016237f"
     },
     {
       "name": "Server Admin (Express) - /restaurant/v1",
@@ -116,6 +131,7 @@
           "item": [
             {
               "name": "Verificar salud",
+              "id": "290b54b4-77c1-4e3d-8f57-94d8e7141814",
               "request": {
                 "method": "GET",
                 "header": [
@@ -136,13 +152,15 @@
               },
               "response": []
             }
-          ]
+          ],
+          "id": "a161eae8-f809-4481-9d84-67c0de1463d8"
         },
         {
           "name": "Usuarios",
           "item": [
             {
               "name": "Sincronizar usuario (interno)",
+              "id": "22e8190a-e0da-4a6d-b294-97df24da3466",
               "request": {
                 "method": "POST",
                 "header": [
@@ -171,6 +189,7 @@
             },
             {
               "name": "Listar usuarios (protegido)",
+              "id": "e239ed37-7923-437b-964a-c6ec75eb6326",
               "request": {
                 "method": "GET",
                 "header": [
@@ -207,6 +226,7 @@
             },
             {
               "name": "Ver perfil (protegido)",
+              "id": "9b488ad9-c40f-455a-bbdd-0138f239c579",
               "request": {
                 "method": "GET",
                 "header": [
@@ -232,114 +252,15 @@
               },
               "response": []
             }
-          ]
-        },
-        {
-          "name": "Órdenes",
-          "item": [
-            {
-              "name": "Crear orden (protegido)",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"table\": \"{{table_id}}\",\n  \"restaurant\": \"{{restaurant_id}}\",\n  \"items\": [\n    {\n      \"menuItem\": \"{{menu_id}}\",\n      \"quantity\": 1,\n      \"modifiers\": [],\n      \"status\": \"EN_ESPERA\",\n      \"notes\": \"Sin cebolla\",\n      \"price\": 25.5\n    }\n  ]\n}"
-                },
-                "url": {
-                  "raw": "{{server_admin_base_url}}/orders",
-                  "host": [
-                    "{{server_admin_base_url}}"
-                  ],
-                  "path": [
-                    "orders"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Cambiar estado de ítem (protegido)",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"status\": \"EN_COCINA\"\n}"
-                },
-                "url": {
-                  "raw": "{{server_admin_base_url}}/orders/{{order_id}}/item/{{order_item_id}}/status",
-                  "host": [
-                    "{{server_admin_base_url}}"
-                  ],
-                  "path": [
-                    "orders",
-                    "{{order_id}}",
-                    "item",
-                    "{{order_item_id}}",
-                    "status"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Cambiar estado de orden (protegido)",
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  },
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{token}}"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"status\": \"CERRADA\"\n}"
-                },
-                "url": {
-                  "raw": "{{server_admin_base_url}}/orders/{{order_id}}/status",
-                  "host": [
-                    "{{server_admin_base_url}}"
-                  ],
-                  "path": [
-                    "orders",
-                    "{{order_id}}",
-                    "status"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
+          ],
+          "id": "5d099477-b1c8-4f06-8b54-ab5b24bfcd2e"
         },
         {
           "name": "Restaurantes",
           "item": [
             {
               "name": "Listar restaurantes",
+              "id": "3a652397-d503-41ff-b83e-a73455a6cfa1",
               "request": {
                 "method": "GET",
                 "header": [
@@ -368,6 +289,7 @@
             },
             {
               "name": "Obtener restaurante",
+              "id": "6da7fd0a-39b9-40f8-b1fa-35d2b1aae775",
               "request": {
                 "method": "GET",
                 "header": [
@@ -391,6 +313,7 @@
             },
             {
               "name": "Crear restaurante",
+              "id": "8416ced7-7197-45eb-8280-703128dc2bea",
               "request": {
                 "method": "POST",
                 "header": [
@@ -417,6 +340,7 @@
             },
             {
               "name": "Actualizar restaurante",
+              "id": "4661cb2b-617c-46d1-b663-ac7424f6573a",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -444,6 +368,7 @@
             },
             {
               "name": "Activar restaurante",
+              "id": "77ee7a60-d12f-4ebf-b2b1-38e2ddc69b12",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -468,6 +393,7 @@
             },
             {
               "name": "Desactivar restaurante",
+              "id": "49e0a74e-b1ef-4b26-a4c1-7d9345b08333",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -490,13 +416,15 @@
               },
               "response": []
             }
-          ]
+          ],
+          "id": "f1f54355-80b5-4aef-b474-f13f6983acfb"
         },
         {
           "name": "Mesas",
           "item": [
             {
               "name": "Listar mesas",
+              "id": "98d1c2c9-1443-4ab8-99b8-17604833f07f",
               "request": {
                 "method": "GET",
                 "header": [
@@ -533,6 +461,7 @@
             },
             {
               "name": "Obtener mesa",
+              "id": "6b6fa642-ca4d-4685-bba6-7627b85877a8",
               "request": {
                 "method": "GET",
                 "header": [
@@ -556,6 +485,7 @@
             },
             {
               "name": "Crear mesa",
+              "id": "e6484574-8967-48e2-87dc-1e9b08a25023",
               "request": {
                 "method": "POST",
                 "header": [
@@ -582,6 +512,7 @@
             },
             {
               "name": "Actualizar mesa",
+              "id": "136fd7f1-7bb8-48ee-8c30-200712ffede0",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -609,6 +540,7 @@
             },
             {
               "name": "Activar mesa",
+              "id": "686105cf-7566-4ea3-8691-9b91667c8635",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -633,6 +565,7 @@
             },
             {
               "name": "Desactivar mesa",
+              "id": "ac1db942-3efd-4679-b56d-0217a03d66bd",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -655,13 +588,120 @@
               },
               "response": []
             }
-          ]
+          ],
+          "id": "e3279bdd-4696-4bbe-8fe2-21b88219f68d"
+        },
+        {
+          "name": "Órdenes",
+          "item": [
+            {
+              "name": "Crear orden (protegido)",
+              "id": "5f3bfc97-1a29-4925-835d-8ccef558c56e",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"table\": \"{{table_id}}\",\n  \"restaurant\": \"{{restaurant_id}}\",\n  \"items\": [\n    {\n      \"menuItem\": \"{{menu_id}}\",\n      \"quantity\": 1,\n      \"modifiers\": [],\n      \"status\": \"EN_ESPERA\",\n      \"notes\": \"Sin cebolla\",\n      \"price\": 25.5\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{server_admin_base_url}}/orders",
+                  "host": [
+                    "{{server_admin_base_url}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cambiar estado de ítem (protegido)",
+              "id": "b428c766-7406-491a-9423-edec9c3dd83f",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"EN_COCINA\"\n}"
+                },
+                "url": {
+                  "raw": "{{server_admin_base_url}}/orders/{{order_id}}/item/{{order_item_id}}/status",
+                  "host": [
+                    "{{server_admin_base_url}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "{{order_id}}",
+                    "item",
+                    "{{order_item_id}}",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cambiar estado de orden (protegido)",
+              "id": "4ae81563-177e-4bcf-90aa-f68d0f302bb2",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"CERRADA\"\n}"
+                },
+                "url": {
+                  "raw": "{{server_admin_base_url}}/orders/{{order_id}}/status",
+                  "host": [
+                    "{{server_admin_base_url}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "{{order_id}}",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "id": "cd3e697d-8689-40e2-9f56-3fcfae7bdd58"
         },
         {
           "name": "Menús",
           "item": [
             {
               "name": "Listar menú",
+              "id": "490d3dac-64fd-4d5d-959a-efd8a5beb42c",
               "request": {
                 "method": "GET",
                 "header": [
@@ -698,6 +738,7 @@
             },
             {
               "name": "Obtener plato",
+              "id": "07e3931b-b980-45c2-b47d-b819dc6a3d36",
               "request": {
                 "method": "GET",
                 "header": [
@@ -721,6 +762,7 @@
             },
             {
               "name": "Crear plato",
+              "id": "9304e110-eb21-4f6a-8121-be6c2d91cdd2",
               "request": {
                 "method": "POST",
                 "header": [
@@ -747,6 +789,7 @@
             },
             {
               "name": "Actualizar plato",
+              "id": "c526dca9-520d-44a3-81c9-4de1a718b415",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -774,6 +817,7 @@
             },
             {
               "name": "Activar plato",
+              "id": "6c659b05-260f-476a-bb3e-6dc1c2d09f6d",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -798,6 +842,7 @@
             },
             {
               "name": "Desactivar plato",
+              "id": "d308882e-c335-4e94-91b8-aed86328ad5f",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -820,13 +865,15 @@
               },
               "response": []
             }
-          ]
+          ],
+          "id": "95eb0bbf-4f1e-4fa2-8f0e-b1de8b29865f"
         },
         {
           "name": "Reservaciones",
           "item": [
             {
               "name": "Listar reservaciones",
+              "id": "d30f05f7-ac98-422a-92ff-70d2b4d4f1d8",
               "request": {
                 "method": "GET",
                 "header": [
@@ -867,6 +914,7 @@
             },
             {
               "name": "Obtener reservación",
+              "id": "0980ac86-2fb8-44ca-a949-7e75ea809523",
               "request": {
                 "method": "GET",
                 "header": [
@@ -890,6 +938,7 @@
             },
             {
               "name": "Crear reservación",
+              "id": "ba173070-a989-4369-a9a5-0409af1937fa",
               "request": {
                 "method": "POST",
                 "header": [
@@ -916,6 +965,7 @@
             },
             {
               "name": "Actualizar reservación",
+              "id": "c18e73c8-c8ac-4d1f-82a1-64ac2b0554d1",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -943,6 +993,7 @@
             },
             {
               "name": "Activar reservación",
+              "id": "331ec5b7-6616-4e25-80c3-68216581950a",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -967,6 +1018,7 @@
             },
             {
               "name": "Desactivar reservación",
+              "id": "1465fc6d-96fc-404f-96c6-1a4c3518e1e1",
               "request": {
                 "method": "PUT",
                 "header": [
@@ -989,73 +1041,88 @@
               },
               "response": []
             }
-          ]
+          ],
+          "id": "4bacf6da-9b84-4454-8539-e0f23cb81701"
         }
-      ]
+      ],
+      "id": "a791cb31-db0a-41f3-9f1c-1268afd119b2"
     }
   ],
   "variable": [
     {
+      "id": "6198739b-af7b-4619-8eb7-7d189934a915",
       "key": "server_admin_base_url",
       "value": "http://localhost:3001/restaurant/v1",
       "type": "string"
     },
     {
+      "id": "e8081d71-de89-45ce-be6a-19914eee020a",
       "key": "auth_service_base_url",
       "value": "http://localhost:5058",
       "type": "string"
     },
     {
+      "id": "bf704872-9d1f-48d1-8ccb-b9a022ac0511",
       "key": "token",
       "value": "",
       "type": "string"
     },
     {
+      "id": "6dd2c33b-31d5-4fdc-91f4-73738a58d5d6",
       "key": "email",
       "value": "user{{$timestamp}}@mail.com",
       "type": "string"
     },
     {
+      "id": "7fad451c-9b59-42fb-b8a6-286ac3dc6bd3",
       "key": "password",
       "value": "Test1234!",
       "type": "string"
     },
     {
+      "id": "e9786c71-aac9-4302-97f4-8753f3bd2646",
       "key": "role",
       "value": "WAITER",
       "type": "string"
     },
     {
+      "id": "965046e0-de24-4baf-a8d0-71173d45190b",
       "key": "restaurant_id",
       "value": "",
       "type": "string"
     },
     {
+      "id": "43d79857-19a3-456f-ac97-fe7344cbfc37",
       "key": "table_id",
       "value": "",
       "type": "string"
     },
     {
+      "id": "691e53fb-6ad8-493b-86f7-ce5da486af1c",
       "key": "menu_id",
       "value": "",
       "type": "string"
     },
     {
+      "id": "4dcb06a2-9347-4b65-858d-c1f527d82bed",
       "key": "reservation_id",
       "value": "",
       "type": "string"
     },
     {
+      "id": "83a4c14e-7cea-44f3-9dc6-bbfb4a5a15cb",
       "key": "order_id",
       "value": "",
       "type": "string"
     },
     {
+      "id": "9446abf3-e0a7-4c4c-8c23-ef5e77ba094d",
       "key": "order_item_id",
       "value": "",
       "type": "string"
     },
     {
+      "id": "b6fb08fd-6e46-491e-b19e-b418329a0c75",
       "key": "user_id",
       "value": "",
       "type": "string"

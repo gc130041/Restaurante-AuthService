@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        enum: ['ADMIN_ROLE', 'CLIENT_ROLE', 'WAITER'], // Añadido WAITER de .NET
-        default: 'CLIENT_ROLE'
+        enum: ['ADMIN', 'CLIENT', 'WAITER'], // Añadido WAITER de .NET
+        default: 'CLIENT'
     },
     status: {
         type: Boolean,
