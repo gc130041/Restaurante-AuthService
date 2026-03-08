@@ -1,7 +1,7 @@
-using auth_service.Models;
 using Microsoft.EntityFrameworkCore;
+using Restaurante.AuthService.Domain.Entities;
 
-namespace auth_service.Data
+namespace Restaurante.AuthService.Infrastructure.Data
 {
     public class AuthDbContext : DbContext
     {

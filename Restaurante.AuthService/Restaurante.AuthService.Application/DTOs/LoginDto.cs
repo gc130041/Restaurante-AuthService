@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace auth_service.DTOs
+namespace Restaurante.AuthService.Application.DTOs
 {
     public class LoginDto
     {

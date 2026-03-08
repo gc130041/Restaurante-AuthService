@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace auth_service.Models
+namespace Restaurante.AuthService.Domain.Entities
 {
     [Table("users")]
     public class User
