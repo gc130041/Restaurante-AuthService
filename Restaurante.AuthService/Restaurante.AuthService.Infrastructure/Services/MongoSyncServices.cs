@@ -21,7 +21,7 @@ public class MongoSyncService : ISyncService
             var syncData = new { email = user.Email, role = user.Role };
             var jsonContent = new StringContent(JsonSerializer.Serialize(syncData), Encoding.UTF8, "application/json");
 
-            await _httpClient.PostAsync("http://localhost:3001/restaurant/v1/users/sync", jsonContent);
+            await _httpClient.PostAsync("http://server-admin:3001/restaurant/v1/users/sync", jsonContent);
         }
         catch (Exception ex)
         {

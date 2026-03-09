@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # 1. Base de datos para el AuthService (.NET)
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: restaurante-postgres
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Base de datos para el ServerAdmin (Node)
+  mongo-db:
+    image: mongo:latest
+    container_name: restaurante-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+
+  # 3. Microservicio de Autenticación (.NET)
+  auth-service:
+    build: 
+      context: ./Restaurante.AuthService
+      dockerfile: Dockerfile
+    container_name: restaurante-authservice
+    ports:
+      - "5065:8080"
+    environment:
+      - ConnectionStrings__PostgresConnection=Host=postgres-db;Port=5432;Database=auth_db;Username=postgres;Password=admin
+      - Jwt__Key=Restaurante_Super_Secret_Key_2026_DotNet8
+      - Jwt__Issuer=RestauranteAuth
+      - Jwt__Audience=RestauranteApp
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  # 4. Microservicio Server Admin (Node.js)
+  server-admin:
+    build:
+      context: ./Restaurante-ServerAdmin/server-admin
+      dockerfile: Dockerfile
+    container_name: restaurante-serveradmin
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - URI_MONGODB=mongodb://mongo-db:27017/restaurante_admin
+      - SECRETORPRIVATEKEY=Restaurante_Super_Secret_Key_2026_DotNet8
+      - AUTH_SERVICE_URL=http://auth-service:8080
+    depends_on:
+      - mongo-db
+      - auth-service
+
+volumes:
+  pgdata:
+  mongodata:

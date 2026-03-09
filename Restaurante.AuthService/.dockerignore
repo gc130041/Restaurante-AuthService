@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+**/TestResults
+**/.git
+.env
+Dockerfile
+.dockerignore
+docs
+Postman
+
+# Ignorar carpetas de compilación local
+.vs/
+.vscode/
+*.user
+
+# Ignorar configuraciones locales
+appsettings.Development.json
