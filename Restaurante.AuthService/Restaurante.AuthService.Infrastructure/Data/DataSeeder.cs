@@ -24,7 +24,7 @@ namespace Restaurante.AuthService.Infrastructure.Data
                     Username = "superadmin",
                     Email = "admin@restaurante.local",
                     PasswordHash = passwordHasher.Hash(adminPassword),
-                    Role = "ADMIN_ROLE",
+                    Role = "SUPER_ADMIN",
                     IsActive = true,
                     EmailVerified = true,
                     CreatedAt = DateTime.UtcNow

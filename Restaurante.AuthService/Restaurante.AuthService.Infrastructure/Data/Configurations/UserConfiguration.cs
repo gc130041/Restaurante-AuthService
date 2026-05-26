@@ -47,6 +47,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("username")
             .HasMaxLength(50);
 
+        builder.Property(u => u.Name)
+            .HasColumnName("name")
+            .HasMaxLength(100);
+
+        builder.Property(u => u.Surname)
+            .HasColumnName("surname")
+            .HasMaxLength(100);
+
+        builder.Property(u => u.Phone)
+            .HasColumnName("phone")
+            .HasMaxLength(20);
+
         builder.Property(u => u.EmailVerified)
             .HasColumnName("email_verified")
             .IsRequired()

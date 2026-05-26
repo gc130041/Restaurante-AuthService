@@ -15,6 +15,11 @@ public class User
     // === Username (para login rápido sin email completo) ===
     public string? Username { get; set; }
 
+    // === Perfil del empleado ===
+    public string? Name { get; set; }
+    public string? Surname { get; set; }
+    public string? Phone { get; set; }
+
     // === Email Verification ===
     public bool EmailVerified { get; set; } = false;
     public string? EmailVerificationToken { get; set; }
