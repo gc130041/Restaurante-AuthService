@@ -17,4 +17,5 @@ public interface IAuthService
     Task<User?> ValidateUserAsync(Guid userId);
     Task<(List<User> Users, int TotalCount)> GetUsersAsync(int page, int limit, string? companyMongoId = null);
     Task<bool> UpdateUserRoleAsync(Guid userId, string newRole, string requesterRole, string? requesterCompanyId);
+    Task<bool> UpdateUserProfileAsync(Guid userId, UpdateProfileDto dto, string requesterRole, string? requesterCompanyId, IPasswordHasher passwordHasher);
 }

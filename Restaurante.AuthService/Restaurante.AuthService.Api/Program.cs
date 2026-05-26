@@ -125,8 +125,14 @@ using (var scope = app.Services.CreateScope())
             context.Database.EnsureCreated();
             
             // === EXECUTING AUTOMATED SCHEMA UPGRADE MIGRATION ===
-            logger.LogInformation("Verificando y aplicando migración atómica para OTP en PostgreSQL...");
+            logger.LogInformation("Verificando y aplicando migración atómica para campos y OTP en PostgreSQL...");
             context.Database.ExecuteSqlRaw(@"
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS branch_mongo_id VARCHAR(64);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS company_mongo_id VARCHAR(64);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(100);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS surname VARCHAR(100);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(50);
                 ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_otp VARCHAR(6);
                 ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_otp_expiry TIMESTAMP WITH TIME ZONE;
             ");
@@ -135,10 +141,13 @@ using (var scope = app.Services.CreateScope())
                 context.Database.ExecuteSqlRaw(@"
                     CREATE UNIQUE INDEX IF NOT EXISTS ix_users_verification_otp_unique ON users (verification_otp) WHERE (verification_otp IS NOT NULL);
                 ");
+                context.Database.ExecuteSqlRaw(@"
+                    CREATE UNIQUE INDEX IF NOT EXISTS ix_users_username_unique ON users (username) WHERE (username IS NOT NULL);
+                ");
             }
             catch (Exception exIndex)
             {
-                logger.LogWarning($"No se pudo crear el índice único de OTP (posiblemente ya existe): {exIndex.Message}");
+                logger.LogWarning($"No se pudo crear índices únicos (posiblemente ya existen): {exIndex.Message}");
             }
             
             await DataSeeder.SeedAsync(context, passwordHasher, configuration);
